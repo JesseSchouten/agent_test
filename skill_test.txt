@@ -1,0 +1,2 @@
+Skill test commit at 2026-08-12 13:54:09 UTC
+This verifies the github-app-clone-and-commit skill works end-to-end.
