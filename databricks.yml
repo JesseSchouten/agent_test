@@ -1,0 +1,37 @@
+bundle:
+  name: uc_saas_churn_analysis
+
+workspace:
+  host: https://dbc-0f232e4d-3ed4.cloud.databricks.com
+
+resources:
+  pipelines:
+    churn_analysis_pipeline:
+      name: "uc_saas_churn_analysis_pipeline"
+      serverless: true
+      catalog: uc_saas_churn_analysis
+      target: gold
+      libraries:
+        - notebook:
+            path: ./src/bronze/generate_bronze.py
+        - notebook:
+            path: ./src/silver/silver_transforms.py
+        - notebook:
+            path: ./src/gold/gold_transforms.py
+      configuration:
+        seed: "42"
+        data_window_start: "2023-01-01"
+        data_window_end: "2024-12-31"
+
+  jobs:
+    churn_analysis_refresh:
+      name: "uc_saas_churn_analysis_refresh"
+      tasks:
+        - task_key: refresh_pipeline
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.churn_analysis_pipeline.id}
+
+targets:
+  dev:
+    mode: development
+    default: true
